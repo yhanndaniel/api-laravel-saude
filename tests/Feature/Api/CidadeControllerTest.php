@@ -80,4 +80,33 @@ class CidadeControllerTest extends TestCase
             ])->etc();
         });
     }
+
+    public function test_cidades_update_endpoint(): void
+    {
+        $cidade = Cidade::factory()->createOne()->toArray();
+
+        $newCity = [
+            'nome' => 'Nova Cidade',
+            'estado' => 'São Paulo',
+        ];
+
+        $response = $this->putJson('/api/cidades/' . $cidade['id'], $newCity);
+
+        $response->assertStatus(200);
+
+        $response->assertJson(function (AssertableJson $json) use ($newCity) {
+            $json->hasAll(['id', 'nome', 'estado', 'created_at', 'updated_at']);
+
+            $json->whereAll($newCity)->etc();
+        });
+    }
+
+    public function test_cidades_destroy_endpoint(): void
+    {
+        $cidade = Cidade::factory()->createOne();
+
+        $response = $this->deleteJson('/api/cidades/' . $cidade->id);
+
+        $response->assertStatus(204);
+    }
 }

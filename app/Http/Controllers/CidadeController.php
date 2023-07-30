@@ -30,12 +30,17 @@ class CidadeController extends Controller
 
         return response()->json($cidade);
     }
-    public function update(UpdateCidadeRequest $request, $id)
+    public function update(UpdateCidadeRequest $request, int $id)
     {
-        //
+        $cidade = $this->cidade->find($id);
+        $cidade->update($request->all());
+        return response()->json($cidade);
     }
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        //
+        $cidade = $this->cidade->find($id);
+        $cidade->delete();
+
+        return response()->json([], 204);
     }
 }
