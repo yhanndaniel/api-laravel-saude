@@ -44,6 +44,6 @@ Uma api com os recursos de Cidades, Medicos e Pacientes Utilizando Laravel mais 
 
 ```
 
-Depois é só clicar no botão do postman [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/9544205-3ebcf897-05b9-4249-899e-4e6e17837a89?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D9544205-3ebcf897-05b9-4249-899e-4e6e17837a89%26entityType%3Dcollection%26workspaceId%3D3ae1ce10-5edd-46e0-a9b1-400b5b0daf33)
+Depois é só clicar no botão do postman e testa a aplicação [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/9544205-3ebcf897-05b9-4249-899e-4e6e17837a89?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D9544205-3ebcf897-05b9-4249-899e-4e6e17837a89%26entityType%3Dcollection%26workspaceId%3D3ae1ce10-5edd-46e0-a9b1-400b5b0daf33)
 
-e testa a aplicação
+
