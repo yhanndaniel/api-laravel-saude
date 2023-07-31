@@ -35,4 +35,10 @@ class Paciente extends Model
             set: fn ($value) => formatOnlyNumber($value)
         );
     }
+
+    public function medicos()
+    {
+        return $this->belongsToMany(Medico::class, 'medico_paciente', 'paciente_id', 'medico_id')->withTimestamps();
+    }
+
 }

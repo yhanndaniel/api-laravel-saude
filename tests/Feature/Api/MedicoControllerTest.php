@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Medico;
+use App\Models\Paciente;
 use App\Models\User;
 use Database\Seeders\CidadeSeeder;
 use Database\Seeders\DatabaseSeeder;
@@ -583,5 +584,37 @@ class MedicoControllerTest extends TestCase
                 'message' => 'Unauthenticated.',
             ]);
         });
+    }
+
+    public function test_medicos_pacientes_endpoint(): void
+    {
+        $medico = Medico::factory()->createOne();
+        $pacientes = Paciente::factory(3)->create();
+
+        foreach ($pacientes as $paciente) {
+            $medico->pacientes()->attach($paciente->id);
+        }
+
+        $response = $this->getJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonCount(3);
+
+        $response->assertJson(function (AssertableJson $json) use ($pacientes) {
+            $json->hasAll(['0.id', '0.nome', '0.cpf', '0.celular','0.created_at', '0.updated_at', '0.deleted_at']);
+
+            $json->whereAll([
+                '0.id' => $pacientes[0]->id,
+                '0.nome' => $pacientes[0]->nome,
+                '0.cpf' => $pacientes[0]->cpf,
+                '0.celular' => $pacientes[0]->celular,
+                '0.created_at' => $pacientes[0]->created_at->jsonSerialize(),
+                '0.updated_at' => $pacientes[0]->updated_at->jsonSerialize(),
+            ]);
+        });
+
     }
 }

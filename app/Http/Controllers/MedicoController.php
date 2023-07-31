@@ -42,4 +42,9 @@ class MedicoController extends Controller
 
         return response()->json([], 204);
     }
+
+    public function pacientes(Medico $medico)
+    {
+        return response()->json($medico->pacientes, 200);
+    }
 }
