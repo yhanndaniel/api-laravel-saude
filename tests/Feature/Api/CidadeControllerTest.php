@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\Cidade;
 use App\Models\Medico;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -12,6 +13,27 @@ use Tests\TestCase;
 class CidadeControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    private $token;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->token = $this->login();
+    }
+
+    private function login(): string
+    {
+        $user = User::factory()->createOne();
+
+        $loginResponse = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        return $loginResponse->json('access_token');
+    }
 
     public function test_cidades_index_endpoint(): void
     {
@@ -68,7 +90,9 @@ class CidadeControllerTest extends TestCase
     {
         $cidade = Cidade::factory()->makeOne()->toArray();
 
-        $response = $this->postJson('/api/cidades', $cidade);
+        $response = $this->postJson('/api/cidades', $cidade, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(201);
 
@@ -91,7 +115,9 @@ class CidadeControllerTest extends TestCase
             'estado' => 'São Paulo',
         ];
 
-        $response = $this->putJson('/api/cidades/' . $cidade['id'], $newCity);
+        $response = $this->putJson('/api/cidades/' . $cidade['id'], $newCity, [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(200);
 
@@ -106,7 +132,9 @@ class CidadeControllerTest extends TestCase
     {
         $cidade = Cidade::factory()->createOne();
 
-        $response = $this->deleteJson('/api/cidades/' . $cidade->id);
+        $response = $this->deleteJson('/api/cidades/' . $cidade->id, [], [
+            'Authorization' => 'Bearer ' . $this->token,
+        ]);
 
         $response->assertStatus(204);
     }

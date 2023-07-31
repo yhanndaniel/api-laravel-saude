@@ -12,7 +12,7 @@ class CidadeController extends Controller
 
     public function __construct(private Cidade $cidade)
     {
-
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'medicos']);
     }
     public function index()
     {
