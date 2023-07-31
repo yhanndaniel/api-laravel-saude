@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCidadeRequest;
 use App\Http\Requests\UpdateCidadeRequest;
 use App\Models\Cidade;
+use Illuminate\Http\Request;
 
 class CidadeController extends Controller
 {
@@ -42,5 +43,11 @@ class CidadeController extends Controller
         $cidade->delete();
 
         return response()->json([], 204);
+    }
+
+    public function medicos(int $cidade_id)
+    {
+        $cidade = $this->cidade->where('id', $cidade_id)->with('medicos')->first();
+        return $cidade->medicos;
     }
 }

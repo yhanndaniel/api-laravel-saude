@@ -25,4 +25,6 @@ Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum')
 
 Route::apiResource('cidades', CidadeController::class);
 
+Route::get('cidades/{cidade}/medicos', [CidadeController::class, 'medicos']);
+
 Route::apiResource('medicos', MedicoController::class);

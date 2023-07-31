@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Cidade;
+use App\Models\Medico;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -108,5 +109,38 @@ class CidadeControllerTest extends TestCase
         $response = $this->deleteJson('/api/cidades/' . $cidade->id);
 
         $response->assertStatus(204);
+    }
+
+    public function test_cidades_medicos_endpoint(): void
+    {
+        $cidade = Cidade::factory()->createOne();
+        $medicos = Medico::factory(4)->create([
+            'cidade_id' => $cidade->id
+        ]);
+
+        $response = $this->getJson('/api/cidades/'.$cidade->id.'/medicos');
+
+        $response->assertStatus(200);
+
+        $response->assertJsonCount(4);
+        $response->assertJson(function (AssertableJson $json) use ($medicos) {
+            $json->hasAll(['0.id', '0.nome', '0.especialidade', '0.cidade_id', '0.created_at', '0.updated_at']);
+
+            $json->whereAllType([
+                '0.id' => 'integer',
+                '0.nome' => 'string',
+                '0.especialidade' => 'string',
+                '0.cidade_id' => 'integer'
+            ]);
+
+            $medico = $medicos->first();
+
+            $json->whereAll([
+                '0.id' => $medico->id,
+                '0.nome' => $medico->nome,
+                '0.especialidade' => $medico->especialidade,
+                '0.cidade_id' => $medico->cidade_id
+            ]);
+        });
     }
 }
