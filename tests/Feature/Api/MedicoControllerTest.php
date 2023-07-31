@@ -617,4 +617,51 @@ class MedicoControllerTest extends TestCase
         });
 
     }
+
+    public function test_medicos_add_pacientes_endpoint(): void
+    {
+        $medico = Medico::factory()->createOne();
+        $paciente = Paciente::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => $medico->id,
+            'paciente_id' => $paciente->id
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(201);
+
+        $response->assertJson(function (AssertableJson $json) use ($medico, $paciente) {
+            $json->hasAll(['id', 'nome', 'especialidade', 'cidade_id', 'created_at', 'updated_at', 'deleted_at', 'pacientes']);
+
+            $json->whereAll([
+                'id' => $medico->id,
+                'nome' => $medico->nome,
+                'especialidade' => $medico->especialidade,
+                'cidade_id' => $medico->cidade_id,
+                'created_at' => $medico->created_at->jsonSerialize(),
+                'updated_at' => $medico->updated_at->jsonSerialize(),
+                'deleted_at' => $medico->deleted_at,
+                'pacientes' => [
+                    0 => [
+                        'id' => $paciente->id,
+                        'nome' => $paciente->nome,
+                        'cpf' => $paciente->cpf,
+                        'celular' => $paciente->celular,
+                        'created_at' => $paciente->created_at->jsonSerialize(),
+                        'updated_at' => $paciente->updated_at->jsonSerialize(),
+                        'deleted_at' => $paciente->deleted_at,
+                        'pivot' => [
+                            'medico_id' => $medico->id,
+                            'paciente_id' => $paciente->id,
+                            'created_at' => $paciente->created_at->jsonSerialize(),
+                            'updated_at' => $paciente->updated_at->jsonSerialize(),
+                        ]
+                    ]
+                ]
+            ])->etc();
+        });
+
+    }
 }

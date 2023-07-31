@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MedicoAddPacienteRequest;
 use App\Http\Requests\StoreMedicoRequest;
 use App\Http\Requests\UpdateMedicoRequest;
 use App\Models\Medico;
@@ -47,4 +48,14 @@ class MedicoController extends Controller
     {
         return response()->json($medico->pacientes, 200);
     }
+
+    public function addPaciente(MedicoAddPacienteRequest $request, Medico $medico)
+    {
+        $medico->pacientes()->attach($request->paciente_id);
+
+        $medico->pacientes;
+
+        return response()->json($medico, 201);
+    }
+
 }
