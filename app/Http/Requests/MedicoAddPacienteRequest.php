@@ -13,7 +13,8 @@ class MedicoAddPacienteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'medico_id' => ['required', 'integer', 'exists:medico,id'],
+            'paciente_id' => ['required', 'integer', 'exists:paciente,id'],
         ];
     }
 }

@@ -664,4 +664,187 @@ class MedicoControllerTest extends TestCase
         });
 
     }
+
+    public function test_medicos_add_pacientes_endpoint_without_token(): void
+    {
+        $medico = Medico::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes');
+
+        $response->assertStatus(401);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message']);
+
+            $json->whereAll([
+                'message' => 'Unauthenticated.',
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_medico_id_required(): void
+    {
+        $medico = Medico::factory()->createOne();
+
+        $paciente = Paciente::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'paciente_id' => $paciente->id,
+            'medico_id' => null
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The medico id field is required.',
+                'errors' => [
+                    'medico_id' => [
+                        'The medico id field is required.',
+                    ]
+                ]
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_medico_id_integer(): void
+    {
+        $medico = Medico::factory()->createOne();
+        $paciente = Paciente::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => 'asdf',
+            'paciente_id' => $paciente->id,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The medico id field must be an integer.',
+                'errors' => [
+                    'medico_id' => [
+                        'The medico id field must be an integer.',
+                    ]
+                ]
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_medico_id_exists(): void
+    {
+        $medico = Medico::factory()->createOne();
+        $paciente = Paciente::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => 999,
+            'paciente_id' => $paciente->id,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The selected medico id is invalid.',
+                'errors' => [
+                    'medico_id' => [
+                        'The selected medico id is invalid.',
+                    ]
+                ]
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_paciente_id_required(): void
+    {
+        $medico = Medico::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => $medico->id,
+            'paciente_id' => null,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The paciente id field is required.',
+                'errors' => [
+                    'paciente_id' => [
+                        'The paciente id field is required.',
+                    ]
+                ]
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_paciente_id_integer(): void
+    {
+        $medico = Medico::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => $medico->id,
+            'paciente_id' => 'asdf',
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The paciente id field must be an integer.',
+                'errors' => [
+                    'paciente_id' => [
+                        'The paciente id field must be an integer.',
+                    ]
+                ]
+            ]);
+        });
+    }
+
+    public function test_medicos_add_pacientes_endpoint_paciente_id_exists(): void
+    {
+        $medico = Medico::factory()->createOne();
+
+        $response = $this->postJson('/api/medicos/' . $medico->id . '/pacientes', [
+            'medico_id' => $medico->id,
+            'paciente_id' => 999,
+        ], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
+
+        $response->assertStatus(422);
+
+        $response->assertJson(function (AssertableJson $json) {
+            $json->hasAll(['message', 'errors']);
+
+            $json->whereAll([
+                'message' => 'The selected paciente id is invalid.',
+                'errors' => [
+                    'paciente_id' => [
+                        'The selected paciente id is invalid.',
+                    ]
+                ]
+            ]);
+        });
+    }
 }
