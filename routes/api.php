@@ -30,4 +30,4 @@ Route::get('cidades/{cidade}/medicos', [CidadeController::class, 'medicos']);
 
 Route::apiResource('medicos', MedicoController::class);
 
-Route::apiResource('pacientes', PacienteController::class);
+Route::apiResource('pacientes', PacienteController::class)->middleware('auth:sanctum');

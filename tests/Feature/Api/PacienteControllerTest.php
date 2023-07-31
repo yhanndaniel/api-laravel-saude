@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Paciente;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,35 @@ class PacienteControllerTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-    private $cpfRegexPattern = '/^\d{3}\.\d{3}\.\d{3}-\d{2}$/';
-    private $phoneRegexPattern = '/^\(\d{2}\) \d{4,5}-\d{4}$/';
+    private string $cpfRegexPattern = '/^\d{3}\.\d{3}\.\d{3}-\d{2}$/';
+    private string $phoneRegexPattern = '/^\(\d{2}\) \d{4,5}-\d{4}$/';
+    private string $token;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->token = $this->login();
+    }
+
+    private function login(): string
+    {
+        $user = User::factory()->createOne();
+
+        $loginResponse = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        return $loginResponse->json('access_token');
+    }
 
     public function test_paciente_index_endpoint(): void
     {
         $pacientes = Paciente::factory(3)->create();
-        $response = $this->getJson('/api/pacientes');
+        $response = $this->getJson('/api/pacientes', [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
 
         $response->assertStatus(200);
 
@@ -56,7 +79,9 @@ class PacienteControllerTest extends TestCase
     {
         $paciente = Paciente::factory()->createOne();
 
-        $response = $this->getJson('/api/pacientes/' . $paciente->id);
+        $response = $this->getJson('/api/pacientes/' . $paciente->id, [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
 
         $response->assertStatus(200);
 
@@ -87,7 +112,9 @@ class PacienteControllerTest extends TestCase
     {
         $request = Paciente::factory()->make();
 
-        $response = $this->postJson('/api/pacientes', $request->toArray());
+        $response = $this->postJson('/api/pacientes', $request->toArray(), [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
 
         $response->assertStatus(201);
 
@@ -124,7 +151,9 @@ class PacienteControllerTest extends TestCase
 
         $request = Paciente::factory()->make();
 
-        $response = $this->putJson('/api/pacientes/' . $paciente->id, $request->toArray());
+        $response = $this->putJson('/api/pacientes/' . $paciente->id, $request->toArray(), [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
 
         $response->assertStatus(200);
 
@@ -160,7 +189,9 @@ class PacienteControllerTest extends TestCase
     {
         $paciente = Paciente::factory()->createOne();
 
-        $response = $this->deleteJson('/api/pacientes/' . $paciente->id);
+        $response = $this->deleteJson('/api/pacientes/' . $paciente->id, [], [
+            'Authorization' => 'Bearer ' . $this->token
+        ]);
 
         $response->assertStatus(204);
     }
