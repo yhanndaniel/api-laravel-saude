@@ -31,8 +31,8 @@ if(!function_exists('formatPhone')) {
 }
 
 if(!function_exists('formatOnlyNumber')) {
-    function formatOnlyNumber(string $phoneNumber): string
+    function formatOnlyNumber(?string $text): string
     {
-        return preg_replace('/[^0-9]/', '', $phoneNumber);
+        return preg_replace('/[^0-9]/', '', $text);
     }
 }

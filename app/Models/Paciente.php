@@ -14,7 +14,11 @@ class Paciente extends Model
 
     protected $table = 'paciente';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'nome',
+        'cpf',
+        'celular',
+    ];
 
     protected function cpf(): Attribute
     {
