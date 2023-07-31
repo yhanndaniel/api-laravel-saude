@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CidadeController;
 use App\Http\Controllers\MedicoController;
+use App\Http\Controllers\PacienteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,3 +29,5 @@ Route::apiResource('cidades', CidadeController::class);
 Route::get('cidades/{cidade}/medicos', [CidadeController::class, 'medicos']);
 
 Route::apiResource('medicos', MedicoController::class);
+
+Route::apiResource('pacientes', PacienteController::class);
